@@ -11,4 +11,6 @@ bool touchLoadCalibration();
 
 void touchSaveCalibration();
 
+void touchHandleEndScreen();
+
 #endif

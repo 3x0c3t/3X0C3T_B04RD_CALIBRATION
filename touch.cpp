@@ -11,6 +11,24 @@ extern TFT_eSPI tft;
 
 static uint16_t touchCalData[5];
 
+
+// ============================================================
+// BOUTON RECOMMENCER
+// ============================================================
+
+#define BUTTON_X       25
+#define BUTTON_Y       270
+#define BUTTON_W       190
+#define BUTTON_H       40
+
+#define BUTTON_TEXT_X  (BUTTON_X + BUTTON_W / 2)
+#define BUTTON_TEXT_Y  (BUTTON_Y + BUTTON_H / 2)
+
+
+// ============================================================
+// INITIALISATION
+// ============================================================
+
 void touchInit()
 {
     Serial.println("[TOUCH] Initialisation...");
@@ -31,7 +49,10 @@ void touchInit()
 
     if (FORCE_CALIBRATION)
     {
+        Serial.println("[TOUCH] Calibration forcee");
+
         touchCalibration();
+
         return;
     }
 
@@ -42,9 +63,15 @@ void touchInit()
     else
     {
         Serial.println("[TOUCH] Aucune calibration");
+
         touchCalibration();
     }
 }
+
+
+// ============================================================
+// CHARGEMENT CALIBRATION
+// ============================================================
 
 bool touchLoadCalibration()
 {
@@ -80,6 +107,11 @@ bool touchLoadCalibration()
     return true;
 }
 
+
+// ============================================================
+// SAUVEGARDE CALIBRATION
+// ============================================================
+
 void touchSaveCalibration()
 {
     fs::File file = SPIFFS.open(
@@ -90,7 +122,6 @@ void touchSaveCalibration()
     if (!file)
     {
         Serial.println("[TOUCH] ERREUR sauvegarde");
-
         return;
     }
 
@@ -104,17 +135,18 @@ void touchSaveCalibration()
     Serial.println("[TOUCH] Calibration sauvegardee");
 }
 
+
+// ============================================================
+// CALIBRATION
+// ============================================================
+
 bool touchCalibration()
 {
-    // ------------------------------------------------------------
-    // TITRE UNIQUE
-    // ------------------------------------------------------------
-
     Serial.println("=== CALIBRATION TOUCH ===");
 
-    // ------------------------------------------------------------
-    // ECRAN
-    // ------------------------------------------------------------
+    // --------------------------------------------------------
+    // ECRAN DE CALIBRATION
+    // --------------------------------------------------------
 
     tft.fillScreen(COLOR_BACKGROUND);
 
@@ -141,9 +173,10 @@ bool touchCalibration()
 
     delay(1000);
 
-    // ------------------------------------------------------------
-    // CALIBRATION
-    // ------------------------------------------------------------
+
+    // --------------------------------------------------------
+    // CALIBRATION TFT_eSPI
+    // --------------------------------------------------------
 
     uint16_t calData[5];
 
@@ -154,24 +187,34 @@ bool touchCalibration()
         15
     );
 
-    // Copie des donnees
+
+    // --------------------------------------------------------
+    // COPIE DES DONNEES
+    // --------------------------------------------------------
+
     for (uint8_t i = 0; i < 5; i++)
     {
         touchCalData[i] = calData[i];
     }
 
-    // Activation immediate
+
+    // --------------------------------------------------------
+    // ACTIVATION IMMEDIATE
+    // --------------------------------------------------------
+
     tft.setTouch(touchCalData);
 
-    // ------------------------------------------------------------
+
+    // --------------------------------------------------------
     // SAUVEGARDE
-    // ------------------------------------------------------------
+    // --------------------------------------------------------
 
     touchSaveCalibration();
 
-    // ------------------------------------------------------------
+
+    // --------------------------------------------------------
     // RESULTATS TERMINAL
-    // ------------------------------------------------------------
+    // --------------------------------------------------------
 
     Serial.println();
     Serial.println("=== RESULTATS CALIBRATION ===");
@@ -193,9 +236,10 @@ bool touchCalibration()
 
     Serial.println("==============================");
 
-    // ------------------------------------------------------------
-    // RESULTATS ECRAN
-    // ------------------------------------------------------------
+
+    // --------------------------------------------------------
+    // RESULTATS TFT
+    // --------------------------------------------------------
 
     tft.fillScreen(COLOR_BACKGROUND);
 
@@ -209,9 +253,10 @@ bool touchCalibration()
     tft.drawString(
         "CALIBRATION OK",
         SCREEN_WIDTH / 2,
-        20,
+        15,
         2
     );
+
 
     tft.setTextColor(
         COLOR_TEXT,
@@ -221,13 +266,19 @@ bool touchCalibration()
     tft.drawString(
         "RESULTATS",
         SCREEN_WIDTH / 2,
-        50,
+        45,
         2
     );
 
+
+    // --------------------------------------------------------
+    // DONNEES
+    // --------------------------------------------------------
+
     tft.setTextDatum(TL_DATUM);
 
-    char buffer[32];
+    char buffer[40];
+
 
     sprintf(
         buffer,
@@ -238,9 +289,10 @@ bool touchCalibration()
     tft.drawString(
         buffer,
         15,
-        85,
+        75,
         2
     );
+
 
     sprintf(
         buffer,
@@ -251,9 +303,10 @@ bool touchCalibration()
     tft.drawString(
         buffer,
         15,
-        115,
+        105,
         2
     );
+
 
     sprintf(
         buffer,
@@ -264,9 +317,10 @@ bool touchCalibration()
     tft.drawString(
         buffer,
         15,
-        145,
+        135,
         2
     );
+
 
     sprintf(
         buffer,
@@ -277,9 +331,10 @@ bool touchCalibration()
     tft.drawString(
         buffer,
         15,
-        175,
+        165,
         2
     );
+
 
     sprintf(
         buffer,
@@ -290,9 +345,14 @@ bool touchCalibration()
     tft.drawString(
         buffer,
         15,
-        205,
+        195,
         2
     );
+
+
+    // --------------------------------------------------------
+    // MESSAGE SAUVEGARDE
+    // --------------------------------------------------------
 
     tft.setTextDatum(TC_DATUM);
 
@@ -304,13 +364,159 @@ bool touchCalibration()
     tft.drawString(
         "DONNEES SAUVEGARDEES",
         SCREEN_WIDTH / 2,
-        255,
+        225,
         2
     );
 
-    delay(1500);
+
+    // --------------------------------------------------------
+    // BOUTON RECOMMENCER
+    // --------------------------------------------------------
+
+    tft.fillRoundRect(
+        BUTTON_X,
+        BUTTON_Y,
+        BUTTON_W,
+        BUTTON_H,
+        6,
+        TFT_BLUE
+    );
+
+    tft.drawRoundRect(
+        BUTTON_X,
+        BUTTON_Y,
+        BUTTON_W,
+        BUTTON_H,
+        6,
+        TFT_WHITE
+    );
+
+    tft.setTextDatum(MC_DATUM);
+
+    tft.setTextColor(
+        TFT_WHITE,
+        TFT_BLUE
+    );
+
+    tft.drawString(
+        "RECOMMENCER",
+        BUTTON_TEXT_X,
+        BUTTON_TEXT_Y,
+        2
+    );
+
+
+    // --------------------------------------------------------
+    // MESSAGE TERMINAL
+    // --------------------------------------------------------
 
     Serial.println("[TOUCH] Calibration terminee");
+    Serial.println("[TOUCH] Bouton RECOMMENCER disponible");
 
     return true;
+}
+
+
+// ============================================================
+// GESTION DU BOUTON DE FIN
+// ============================================================
+
+void touchHandleEndScreen()
+{
+    uint16_t x = 0;
+    uint16_t y = 0;
+
+    // --------------------------------------------------------
+    // Lecture tactile
+    // --------------------------------------------------------
+
+    if (!tft.getTouch(&x, &y))
+    {
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // DEBUG
+    // --------------------------------------------------------
+
+    Serial.print("[TOUCH] X=");
+    Serial.print(x);
+
+    Serial.print(" Y=");
+    Serial.println(y);
+
+
+    // --------------------------------------------------------
+    // TEST DU BOUTON
+    // --------------------------------------------------------
+
+    if (
+        x >= BUTTON_X &&
+        x <= BUTTON_X + BUTTON_W &&
+        y >= BUTTON_Y &&
+        y <= BUTTON_Y + BUTTON_H
+    )
+    {
+        Serial.println("[TOUCH] RECOMMENCER");
+
+
+        // ----------------------------------------------------
+        // FEEDBACK VISUEL
+        // ----------------------------------------------------
+
+        tft.fillRoundRect(
+            BUTTON_X,
+            BUTTON_Y,
+            BUTTON_W,
+            BUTTON_H,
+            6,
+            TFT_DARKGREY
+        );
+
+        tft.drawRoundRect(
+            BUTTON_X,
+            BUTTON_Y,
+            BUTTON_W,
+            BUTTON_H,
+            6,
+            TFT_WHITE
+        );
+
+        tft.setTextDatum(MC_DATUM);
+
+        tft.setTextColor(
+            TFT_WHITE,
+            TFT_DARKGREY
+        );
+
+        tft.drawString(
+            "RECOMMENCER",
+            BUTTON_TEXT_X,
+            BUTTON_TEXT_Y,
+            2
+        );
+
+        delay(150);
+
+
+        // ----------------------------------------------------
+        // ATTENTE DU RELACHEMENT
+        // ----------------------------------------------------
+
+        uint16_t releaseX;
+        uint16_t releaseY;
+
+        while (tft.getTouch(&releaseX, &releaseY))
+        {
+            delay(20);
+        }
+
+
+        // ----------------------------------------------------
+        // NOUVELLE CALIBRATION
+        // ----------------------------------------------------
+
+        touchCalibration();
+    }
 }

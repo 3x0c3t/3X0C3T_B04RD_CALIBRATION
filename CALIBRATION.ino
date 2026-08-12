@@ -28,5 +28,7 @@ void setup()
 
 void loop()
 {
-    delay(1000);
+    touchHandleEndScreen();
+
+    delay(20);
 }
