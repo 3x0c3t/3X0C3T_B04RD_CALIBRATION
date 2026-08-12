@@ -1,22 +1,37 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <Arduino.h>
+#define SCREEN_WIDTH 240
+#define SCREEN_HEIGHT 320
+#define TFT_ROTATION 2
+
+#define TFT_CS 15
+#define TFT_DC 2
+#define TFT_RST 16
+
+#define TOUCH_CS 0
+#define TOUCH_IRQ 5
+
+#define SPI_SCK 14
+#define SPI_MISO 12
+#define SPI_MOSI 13
 
 #define SERIAL_BAUD 115200
 
-#define SCREEN_WIDTH  240
-#define SCREEN_HEIGHT 320
+#define CALIBRATION_POINTS 4
+#define CALIBRATION_SAMPLES 10
+#define CALIBRATION_TIMEOUT 15000
+#define CALIBRATION_RELEASE_TIMEOUT 3000
+#define CALIBRATION_SAMPLE_DELAY 30
 
-#define TFT_ROTATION 2
+#define TOUCH_RAW_X_MIN 388
+#define TOUCH_RAW_X_MAX 3701
+#define TOUCH_RAW_Y_MIN 477
+#define TOUCH_RAW_Y_MAX 3794
 
-#define CALIBRATION_FILE "/TouchCalData"
+#define TOUCH_DEBOUNCE 250
 
-#define FORCE_CALIBRATION true
-
-#define COLOR_BACKGROUND TFT_BLACK
-#define COLOR_TEXT       TFT_WHITE
-#define COLOR_POINT      TFT_MAGENTA
-#define COLOR_SUCCESS    TFT_GREEN
+#define CAL_MARGIN_X 20
+#define CAL_MARGIN_Y 25
 
 #endif

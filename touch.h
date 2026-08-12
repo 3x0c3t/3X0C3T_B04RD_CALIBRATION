@@ -2,15 +2,19 @@
 #define TOUCH_H
 
 #include <Arduino.h>
+#include <XPT2046_Touchscreen.h>
+
+struct TouchPoint
+{
+    uint16_t x;
+    uint16_t y;
+    uint16_t z;
+};
 
 void touchInit();
 
-bool touchCalibration();
+bool touchReadRaw(TouchPoint &point);
 
-bool touchLoadCalibration();
-
-void touchSaveCalibration();
-
-void touchHandleEndScreen();
+bool touchPressed();
 
 #endif
